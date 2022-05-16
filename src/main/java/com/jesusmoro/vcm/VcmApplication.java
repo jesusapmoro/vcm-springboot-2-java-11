@@ -9,5 +9,4 @@ public class VcmApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(VcmApplication.class, args);
 	}
-
 }
