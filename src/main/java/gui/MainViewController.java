@@ -33,7 +33,7 @@ public class MainViewController implements Initializable{
 	@FXML
 	public void onMenuItemProdutoAction() {
 		loadView("/gui/ProductList.fxml", (ProductListController controller) -> {
-			controller.setProductService(new ProductService());
+			controller.setPproductService(new ProductService());
 			controller.updateTableView();
 		});
 	}
