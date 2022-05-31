@@ -9,45 +9,39 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="147.0" prefWidth="531.0"
-	xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="gui.ProductFormController">
+<AnchorPane prefHeight="292.0" prefWidth="648.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ProductFormController">
 	<children>
-		<GridPane layoutX="23.0" layoutY="15.0" prefHeight="81.0"
-			prefWidth="481.0" AnchorPane.bottomAnchor="48.0"
-			AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+		<GridPane layoutX="23.0" layoutY="15.0" prefHeight="81.0" prefWidth="481.0" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
 			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES"
-					maxWidth="153.0" minWidth="10.0" prefWidth="53.0" />
-				<ColumnConstraints hgrow="SOMETIMES"
-					maxWidth="262.0" minWidth="10.0" prefWidth="183.0" />
-				<ColumnConstraints hgrow="SOMETIMES"
-					maxWidth="228.0" minWidth="10.0" prefWidth="207.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="153.0" minWidth="10.0" prefWidth="99.39998779296874" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="251.20001220703125" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="228.0" minWidth="10.0" prefWidth="127.99998779296874" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints minHeight="10.0" prefHeight="30.0"
-					vgrow="SOMETIMES" />
-				<RowConstraints minHeight="10.0" prefHeight="30.0"
-					vgrow="SOMETIMES" />
-				<RowConstraints minHeight="10.0" prefHeight="30.0"
-					vgrow="SOMETIMES" />
+				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 			</rowConstraints>
 			<children>
 				<Label text="Id" />
 				<Label text="Name" GridPane.rowIndex="1" />
-				<TextField fx:id="txtId" editable="false"
-					GridPane.columnIndex="1" />
-				<TextField fx:id="txtName" GridPane.columnIndex="1"
-					GridPane.rowIndex="1" />
-				<Label fx:id="labelErrorName" textFill="#b50000"
-					GridPane.columnIndex="2" GridPane.rowIndex="1" />
-				<HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0"
-					GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label text="Codigo de Barra" GridPane.rowIndex="4" />
+            <Label prefHeight="18.0" prefWidth="74.0" text="Descrição" GridPane.rowIndex="2" />
+            <Label text="Preço" GridPane.rowIndex="3" />
+				<Label fx:id="labelErrorName" textFill="#b50000" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+				<TextField fx:id="txtId" editable="false" GridPane.columnIndex="1" />
+				<TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="txtPrice" onAction="#updateFormDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="txtCodBarra" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
 					<children>
-						<Button fx:id="btSave" mnemonicParsing="false"
-							onAction="#onBtSaveAction" text="Save" />
-						<Button fx:id="btCancel" mnemonicParsing="false"
-							onAction="#onBtCancelAction" text="Cancel" />
+						<Button fx:id="btSave" mnemonicParsing="false" onAction="#onBtSaveAction" text="Save" />
+						<Button fx:id="btCancel" mnemonicParsing="false" onAction="#onBtCancelAction" text="Cancel" />
 					</children>
 				</HBox>
 			</children>

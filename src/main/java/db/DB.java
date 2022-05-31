@@ -17,7 +17,7 @@ public class DB {
 		if (conn == null) {
 			try {
 				Properties props = loadProperties();
-				String url = props.getProperty("url");
+				String url = props.getProperty("dburl");
 				conn = DriverManager.getConnection(url, props);
 			}
 			catch (SQLException e) {
@@ -38,7 +38,7 @@ public class DB {
 	}
 	
 	private static Properties loadProperties() {
-		try (FileInputStream fs = new FileInputStream("dev")) {
+		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();
 			props.load(fs);
 			return props;

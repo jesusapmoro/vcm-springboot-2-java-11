@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="246.0" prefWidth="274.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ProductListController">
+<VBox prefHeight="274.0" prefWidth="555.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ProductListController">
    <children>
       <Label text="Cadastro de produto">
          <font>
@@ -24,10 +24,15 @@
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="New" />
         </items>
       </ToolBar>
-      <TableView fx:id="tableViewProduct" prefHeight="200.0" prefWidth="200.0">
+      <TableView fx:id="tableViewProduct" prefHeight="200.0" prefWidth="523.0">
         <columns>
-          <TableColumn fx:id="tableColumnId" prefWidth="75.0" text="id" />
-          <TableColumn fx:id="tableColumnName" prefWidth="75.0" text="name" />
+          <TableColumn fx:id="tableColumnId" prefWidth="45.0" text="id" />
+          <TableColumn fx:id="tableColumnName" prefWidth="199.0" text="name" />
+            <TableColumn fx:id="tableColumnDescription" prefWidth="75.0" text="Description" />
+            <TableColumn fx:id="tableColumnPrice" prefWidth="75.0" text="Price" />
+            <TableColumn fx:id="tableColumnCodBarra" prefWidth="75.0" text="codigo de barra" />
+            <TableColumn fx:id="tableColumnEDIT" prefWidth="75.0" text="Editar" />
+            <TableColumn fx:id="tableColumnREMOVE" prefWidth="75.0" text="Remover" />
         </columns>
       </TableView>
    </children>

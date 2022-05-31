@@ -27,6 +27,7 @@ public class Product implements Serializable {
 	private String name;
 	private String description;
 	private Double price;
+	private String codBarra;
 	private String imgUrl;
 
 	@ManyToMany
@@ -39,12 +40,13 @@ public class Product implements Serializable {
 	public Product() {
 	}
 
-	public Product(Long id, String name, String description, Double price, String imgUrl) {
+	public Product(Long id, String name, String description, Double price, String codBarra, String imgUrl) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.price = price;
+		this.codBarra = codBarra;
 		this.imgUrl = imgUrl;
 	}
 
@@ -55,7 +57,7 @@ public class Product implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -78,6 +80,14 @@ public class Product implements Serializable {
 
 	public void setPrice(Double price) {
 		this.price = price;
+	}
+	
+	public String getCodBarra() {
+		return codBarra;
+	}
+
+	public void setCodBarra(String codBarra) {
+		this.codBarra = codBarra;
 	}
 
 	public String getImgUrl() {
@@ -125,5 +135,7 @@ public class Product implements Serializable {
 			return false;
 		return true;
 	}
+
+
 
 }

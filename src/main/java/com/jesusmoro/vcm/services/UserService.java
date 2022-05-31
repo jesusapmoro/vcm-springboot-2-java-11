@@ -60,6 +60,11 @@ public class UserService {
 		entity.setPhone(obj.getPhone());
 		
 	}
+
+	public void remove(User obj) {
+		repository.deleteById(obj.getId());
+		
+	}
 	
 	
 }

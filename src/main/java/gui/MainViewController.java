@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-import com.jesusmoro.vcm.services.ProductService;
+
 
 import application.Main;
 import gui.util.Alerts;
@@ -18,6 +18,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.ProductService1;
+import model.services.UserService;
 
 public class MainViewController implements Initializable{
 
@@ -33,19 +35,22 @@ public class MainViewController implements Initializable{
 	@FXML
 	public void onMenuItemProdutoAction() {
 		loadView("/gui/ProductList.fxml", (ProductListController controller) -> {
-			controller.setPproductService(new ProductService());
+			controller.setProductService1(new ProductService1());
 			controller.updateTableView();
 		});
 	}
 	
 	@FXML
 	public void onMenuItemUsuarioAction() {
-		System.out.println("onMenuItemUsuarioAction");
+		loadView("/gui/UserList.fxml", (UserListController controller) -> {
+			controller.setUserService(new UserService());
+			controller.updateTableView();
+		});
 	}
 	
 	@FXML
 	public void onMenuItemAboutAction() {
-		loadView("/gui/About.fxml", x ->{});
+		loadView("/gui/About.fxml", x -> {});
 	}
 
 	@Override

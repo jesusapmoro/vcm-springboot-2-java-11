@@ -26,4 +26,11 @@ public class Constraints {
 			}
 		});
 	}
+	
+	public static String setEmptyIfNull(String txt) {
+		if(txt == null)  {
+			return "";
+		}
+		return txt;
+	}
 }

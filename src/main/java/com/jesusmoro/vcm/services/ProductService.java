@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
 import com.jesusmoro.vcm.entities.Product;
 import com.jesusmoro.vcm.repositories.ProductRepository;
 
 @Service
-@Configurable
 public class ProductService {
 
 	@Autowired
@@ -21,12 +19,16 @@ public class ProductService {
 		return repository.findAll();
 	}
 	
+	public Product insert(Product obj) {
+		return repository.save(obj);
+	}
+	
+	public void remove(Product obj) {
+		repository.deleteById(obj.getId());
+	}
+
 	public Product findById(Long id) {
 		Optional<Product> obj = repository.findById(id);
 		return obj.get();
-	}
-
-	public void remove(Product obj) {
-		repository.deleteById(obj.getId());
 	}
 }

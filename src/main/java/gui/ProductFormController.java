@@ -9,11 +9,11 @@ import java.util.Set;
 
 import com.jesusmoro.vcm.entities.Product;
 import com.jesusmoro.vcm.exceptions.ValidationException;
-import com.jesusmoro.vcm.services.ProductService;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
+import gui.util.Constraints;
 import gui.util.Utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,12 +22,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.services.ProductService1;
 
 public class ProductFormController implements Initializable {
 
 	private Product entity;
 	
-	private ProductService service;
+	private ProductService1 service;
 	
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 	
@@ -35,10 +36,22 @@ public class ProductFormController implements Initializable {
 	private TextField txtId;
 	
 	@FXML
+	private TextField txtCodBarra;
+	
+	@FXML
 	private TextField txtName;
 	
 	@FXML
 	private Label labelErrorName;
+	
+	@FXML
+	private TextField txtDescription;
+	
+	@FXML
+	private TextField txtPrice;
+	
+	@FXML
+	private TextField txtImgUrl;
 	
 	@FXML
 	private Button btSave;
@@ -50,7 +63,7 @@ public class ProductFormController implements Initializable {
 		this.entity = entity;
 	}
 	
-	public void setProductService(ProductService service) {
+	public void setProductService1(ProductService1 service) {
 		this.service = service;
 	}
 	
@@ -68,6 +81,7 @@ public class ProductFormController implements Initializable {
 		}
 		try {
 		entity = getFormData();
+		service.saverOrUpdate(entity);
 		notifyDataDataChangeListeners();
 		Utils.currentStage(event).close();
 		}
@@ -83,7 +97,6 @@ public class ProductFormController implements Initializable {
 		for (DataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
 		}
-		
 	}
 
 	private Product getFormData() {
@@ -94,9 +107,17 @@ public class ProductFormController implements Initializable {
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 		
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
-			exception.addError("name", "Fiel can't be empty");
+			exception.addError("name", "O campo não pode ser vazio");
 		}
 		obj.setName(txtName.getText());
+		
+		obj.setDescription(txtDescription.getText());
+		
+		obj.setPrice(Utils.tryParseToDouble(txtPrice.getText()));
+		
+		obj.setCodBarra(Constraints.setEmptyIfNull(txtCodBarra.getText()));
+		
+		//obj.setImgUrl(txtImgUrl.getText());
 		
 		if (exception.getErros().size() > 0) {
 			throw exception;
@@ -118,6 +139,11 @@ public class ProductFormController implements Initializable {
 	private void initializeNodes() {
 		gui.util.Constraints.setTextFieldInteger(txtId);
 		gui.util.Constraints.setTextFieldMaxLength(txtName, 30);
+		gui.util.Constraints.setTextFieldMaxLength(txtDescription, 40);
+		gui.util.Constraints.setTextFieldDouble(txtPrice);
+		gui.util.Constraints.setTextFieldMaxLength(txtCodBarra, 13);
+		//gui.util.Constraints.setTextFieldMaxLength(txtImgUrl, 40);
+		
 	}
 	
 	public void updateFormDate() {
@@ -126,6 +152,10 @@ public class ProductFormController implements Initializable {
 		}
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
+		txtDescription.setText(entity.getDescription());
+		txtPrice.setText(String.valueOf(entity.getPrice()));
+		txtCodBarra.setText(entity.getCodBarra());
+		//txtImgUrl.setText(entity.getImgUrl());
 	}
 	
 	private void setErrorMessages(Map<String, String> errors) {
@@ -135,7 +165,4 @@ public class ProductFormController implements Initializable {
 			labelErrorName.setText(errors.get("name"));
 		}
 	}
-	
-		
-
 }

@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.jesusmoro.vcm.entities.Product;
-import com.jesusmoro.vcm.services.ProductService;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -32,10 +31,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.services.ProductService1;
 
 public class ProductListController implements Initializable, DataChangeListener {
 
-	private ProductService service;
+	private ProductService1 service;
 	
 	@FXML
 	private TableView<Product> tableViewProduct;
@@ -47,11 +47,22 @@ public class ProductListController implements Initializable, DataChangeListener 
 	private TableColumn<Product, String> tableColumnName;
 	
 	@FXML
+	private TableColumn<Product, String> tableColumnDescription;
+	
+	@FXML
+	private TableColumn<Product, Double> tableColumnPrice;
+	
+	@FXML
+	private TableColumn<Product, String> tableColumnCodBarra;
+	
+	@FXML
+	private TableColumn<Product, String> tableColumnImgUrl;
+	
+	@FXML
 	private TableColumn<Product, Product> tableColumnEDIT;
 
 	@FXML
 	private TableColumn<Product, Product> tableColumnREMOVE;
-	
 	
 	@FXML
 	private Button btNew;
@@ -65,8 +76,8 @@ public class ProductListController implements Initializable, DataChangeListener 
 		createDialogForm(obj, "/gui/ProductForm.fxml", parentStage);
 	}
 	
-	public void setPproductService(ProductService service) {
-		this.service = service;
+	public void setProductService1(ProductService1 productService) {
+		this.service = productService;
 	}
 	
 	@Override
@@ -77,6 +88,9 @@ public class ProductListController implements Initializable, DataChangeListener 
 	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		tableColumnDescription.setCellValueFactory(new PropertyValueFactory<>("Description"));
+		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+		tableColumnCodBarra.setCellValueFactory(new PropertyValueFactory<>("codBarra"));
 		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewProduct.prefHeightProperty().bind(stage.heightProperty());
@@ -84,14 +98,13 @@ public class ProductListController implements Initializable, DataChangeListener 
 	
 	public void updateTableView() {
 		if (service == null) {
-			System.out.println("test");
 			throw new IllegalStateException("Service estava nulo");
-			
 		}
 		
 		List<Product> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
 		tableViewProduct.setItems(obsList);
+		initEditButtons();
 		initRemoveButtons();
 	}
 
@@ -102,12 +115,12 @@ public class ProductListController implements Initializable, DataChangeListener 
 			
 			ProductFormController controller = loader.getController();
 			controller.setProduct(obj);
-			controller.setProductService(new ProductService());
+			controller.setProductService1(new ProductService1());
 			controller.subscribeDataChangeListener(this);
 			controller.updateFormDate();
 			
 			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Insira dos dados do produto");
+			dialogStage.setTitle("Insira os dados do produto");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
@@ -123,6 +136,25 @@ public class ProductListController implements Initializable, DataChangeListener 
 	public void onDataChanged() {
 		updateTableView();
 		
+	}
+	
+	private void initEditButtons() {
+		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumnEDIT.setCellFactory(param -> new TableCell<Product, Product>() {
+			private final Button button = new Button("edit");
+
+			@Override
+			protected void updateItem(Product obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(
+						event -> createDialogForm(obj, "/gui/ProductForm.fxml", Utils.currentStage(event)));
+			}
+		});
 	}
 	
 	private void initRemoveButtons() {
