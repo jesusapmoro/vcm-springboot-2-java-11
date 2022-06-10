@@ -1,7 +1,7 @@
 package com.jesusmoro.vcm.entities;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +29,7 @@ public class Order implements Serializable {
 	private Long id;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
-	private Instant moment;
+	private Date dateOrder;
 	
 	private Integer orderStatus;
 
@@ -46,10 +46,10 @@ public class Order implements Serializable {
 	public Order() {
 	}
 
-	public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
+	public Order(Long id, Date dateOrder, OrderStatus orderStatus, User client) {
 		super();
 		this.id = id;
-		this.moment = moment;
+		this.dateOrder = dateOrder;
 		setOrderStatus(orderStatus);
 		this.client = client;
 	}
@@ -62,12 +62,12 @@ public class Order implements Serializable {
 		this.id = id;
 	}
 
-	public Instant getMoment() {
-		return moment;
+	public Date getDateOrder() {
+		return dateOrder;
 	}
 
-	public void setMoment(Instant moment) {
-		this.moment = moment;
+	public void setDateOrder(Date dateOrder) {
+		this.dateOrder = dateOrder;
 	}
 	
 	public OrderStatus getOrderStatus() {
@@ -133,4 +133,9 @@ public class Order implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", dateOrder=" + dateOrder + ", orderStatus=" + orderStatus + ", client=" + client
+				+ ", items=" + items + ", payment=" + payment + "]";
+	}
 }

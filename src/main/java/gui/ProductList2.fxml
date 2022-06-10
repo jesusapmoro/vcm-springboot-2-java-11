@@ -5,12 +5,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="518.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ProductListController">
+<VBox prefHeight="274.0" prefWidth="555.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ProductListController">
    <children>
       <Label text="Cadastro de produto">
          <font>
@@ -20,7 +19,6 @@
             <Insets left="5.0" top="5.0" />
          </padding>
       </Label>
-      <TextField fx:id="pesquisaProduct" prefHeight="26.0" prefWidth="247.0" />
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="New" />

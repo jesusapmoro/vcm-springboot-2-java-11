@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.jesusmoro.vcm.entities.Category;
+import com.jesusmoro.vcm.entities.Client;
 import com.jesusmoro.vcm.entities.Order;
 import com.jesusmoro.vcm.entities.OrderItem;
 import com.jesusmoro.vcm.entities.Payment;
@@ -16,6 +17,7 @@ import com.jesusmoro.vcm.entities.Product;
 import com.jesusmoro.vcm.entities.User;
 import com.jesusmoro.vcm.entities.enums.OrderStatus;
 import com.jesusmoro.vcm.repositories.CategoryRepository;
+import com.jesusmoro.vcm.repositories.ClientRepository;
 import com.jesusmoro.vcm.repositories.OrderItemRepository;
 import com.jesusmoro.vcm.repositories.OrderRepository;
 import com.jesusmoro.vcm.repositories.ProductRepository;
@@ -39,9 +41,17 @@ public class TestConfig implements CommandLineRunner {
 	
 	@Autowired
 	private OrderItemRepository orderItemRepository;
+	
+	@Autowired
+	private ClientRepository clientRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
+		
+		Client cli1 = new Client(null, "jesus", "vestcasa", "10992297826", "26559327", "284444", "jose c", "428", "cassi", "ms", "79540", "jesusap", "98156", "6712");
+		Client cli2 = new Client(null, "vitor", "vestcasa", null, "26559327888", "2844445", "jose c", "428", "cassi", "ms", "79540", "jesusap", "98156", "6712");
+		
+		clientRepository.saveAll(Arrays.asList(cli1, cli2));
 		
 		Category cat1 = new Category(null, "Electronics"); 
 		Category cat2 = new Category(null, "Books"); 
@@ -68,23 +78,23 @@ public class TestConfig implements CommandLineRunner {
 		User u1 = new User(null, "Maria Brown", "maria@gmail.com", "988888888", "123456"); 
 		User u2 = new User(null, "Alex Green", "alex@gmail.com", "977777777", "123456"); 
 		
-		Order o1 = new Order(null, Instant.parse("2019-06-20T19:53:07Z"), OrderStatus.PAID, u1); 
-		Order o2 = new Order(null, Instant.parse("2019-07-21T03:42:10Z"), OrderStatus.WAITING_PAYMENT, u2); 
-		Order o3 = new Order(null, Instant.parse("2019-07-22T15:21:22Z"), OrderStatus.WAITING_PAYMENT,	u1);
+	//	Order o1 = new Order(null, Instant.parse("2019-06-20T19:53:07Z"), OrderStatus.PAID, u1); 
+		//Order o2 = new Order(null, Instant.parse("2019-07-21T03:42:10Z"), OrderStatus.WAITING_PAYMENT, u2); 
+	//	Order o3 = new Order(null, Instant.parse("2019-07-22T15:21:22Z"), OrderStatus.WAITING_PAYMENT,	u1);
 		
 		userRepository.saveAll(Arrays.asList(u1, u2));
-		orderRepository.saveAll(Arrays.asList(o1, o2, o3));
+	//	orderRepository.saveAll(Arrays.asList(o1, o2, o3));
 		
-		OrderItem oi1 = new OrderItem(o1, p1, 2, p1.getPrice()); 
-		OrderItem oi2 = new OrderItem(o1, p3, 1, p3.getPrice()); 
-		OrderItem oi3 = new OrderItem(o2, p3, 2, p3.getPrice()); 
-		OrderItem oi4 = new OrderItem(o3, p5, 2, p5.getPrice()); 
+	//	OrderItem oi1 = new OrderItem(o1, p1, 2, p1.getPrice()); 
+	//	OrderItem oi2 = new OrderItem(o1, p3, 1, p3.getPrice()); 
+	//	OrderItem oi3 = new OrderItem(o2, p3, 2, p3.getPrice()); 
+	//	OrderItem oi4 = new OrderItem(o3, p5, 2, p5.getPrice()); 
 		
-		orderItemRepository.saveAll(Arrays.asList(oi1, oi2, oi3, oi4));
+		//orderItemRepository.saveAll(Arrays.asList(oi1, oi2, oi3, oi4));
 		
-		Payment pay1 = new Payment(null, Instant.parse("2019-06-20T21:53:07Z"), o1);
-		o1.setPayment(pay1);
+	//	Payment pay1 = new Payment(null, Instant.parse("2019-06-20T21:53:07Z"), o1);
+	//	o1.setPayment(pay1);
 		
-		orderRepository.save(o1);
+		//orderRepository.save(o1);
 	}
 }

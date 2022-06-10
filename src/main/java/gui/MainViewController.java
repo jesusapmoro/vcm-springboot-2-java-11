@@ -18,10 +18,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.OrderService;
 import model.services.ProductService1;
 import model.services.UserService;
 
-public class MainViewController implements Initializable{
+public class MainViewController implements Initializable {
 
 	@FXML
 	private MenuItem menuItemProduto;
@@ -30,7 +31,13 @@ public class MainViewController implements Initializable{
 	private MenuItem menuItemUsuario;
 	
 	@FXML
+	private MenuItem menuItemOrder;
+	
+	@FXML
 	private MenuItem menuItemAbout;
+	
+	@FXML
+	private MenuItem menuItemConsulta;
 	
 	@FXML
 	public void onMenuItemProdutoAction() {
@@ -40,6 +47,7 @@ public class MainViewController implements Initializable{
 		});
 	}
 	
+	
 	@FXML
 	public void onMenuItemUsuarioAction() {
 		loadView("/gui/UserList.fxml", (UserListController controller) -> {
@@ -47,6 +55,15 @@ public class MainViewController implements Initializable{
 			controller.updateTableView();
 		});
 	}
+	
+	@FXML
+	public void onMenuItemOrderAction() {
+		loadView("/gui/OrderList.fxml", (OrderListController controller) -> {
+			controller.setOrderService(new OrderService());
+			controller.updateTableView();
+		});
+	}
+	
 	
 	@FXML
 	public void onMenuItemAboutAction() {

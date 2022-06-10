@@ -2,11 +2,12 @@ package gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import com.jesusmoro.vcm.entities.Product;
+import com.jesusmoro.vcm.entities.Order;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -27,105 +28,99 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.services.ProductService1;
+import model.services.OrderService;
+import model.services.UserService;
 
-public class ProductListController implements Initializable, DataChangeListener {
+public class OrderListController implements Initializable, DataChangeListener {
 
-	private ProductService1 service;
+	private OrderService service;
 	
 	@FXML
-	private TableView<Product> tableViewProduct;
+	private TableView<Order> tableViewOrder;
 	
 	@FXML
-	private TableColumn<Product, Integer> tableColumnId;
+	private TableColumn<Order, Integer> tableColumnId;
 	
 	@FXML
-	private TableColumn<Product, String> tableColumnName;
-	
-	@FXML
-	private TableColumn<Product, String> tableColumnDescription;
-	
-	@FXML
-	private TableColumn<Product, Double> tableColumnPrice;
-	
-	@FXML
-	private TableColumn<Product, String> tableColumnCodBarra;
-	
-	@FXML
-	private TableColumn<Product, String> tableColumnImgUrl;
-	
-	@FXML
-	private TableColumn<Product, Product> tableColumnEDIT;
+	private TableColumn<Order, Date> tableColumnDateOrder;
 
+	//@FXML
+	//private TableColumn<Order, Integer> tableColumnOrderStatus;
+	
 	@FXML
-	private TableColumn<Product, Product> tableColumnREMOVE;
+	private TableColumn<Order, Long> tableColumnClient;
+	
+	//@FXML
+	//private TableColumn<Order, String> tableColumnUserName;
+	
+	@FXML
+	private TableColumn<Order, Order> tableColumnEDIT;
+	
+	@FXML
+	private TableColumn<Order, Order> tableColumnREMOVE;
 	
 	@FXML
 	private Button btNew;
 	
-	@FXML
-	private TextField pesquisaProduct;
-	
-	private ObservableList<Product> obsList;
-	
+	private ObservableList<Order> obsList;
 	
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
-		Product obj = new Product();
-		createDialogForm(obj, "/gui/ProductForm.fxml", parentStage);
+		Order obj = new Order();
+		createDialogForm(obj, "/gui/OrderForm.fxml", parentStage);
 	}
 	
-	public void setProductService1(ProductService1 productService) {
-		this.service = productService;
+	public void setOrderService(OrderService service) {
+		this.service = service;
 	}
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		initializeNodes();
+		InitializeableNode();
 	}
 
-	private void initializeNodes() {
+	private void InitializeableNode() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		tableColumnDescription.setCellValueFactory(new PropertyValueFactory<>("Description"));
-		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-		tableColumnCodBarra.setCellValueFactory(new PropertyValueFactory<>("codBarra"));
+		tableColumnDateOrder.setCellValueFactory(new PropertyValueFactory<>("dateOrder"));
+		Utils.formatTableColumnDate(tableColumnDateOrder, "dd/MM/yyyy");
+		//tableColumnOrderStatus.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+		tableColumnClient.setCellValueFactory(new PropertyValueFactory<>("client"));
+		//tableColumnUserName.setCellValueFactory(new PropertyValueFactory<>("userName"));
 		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
-		tableViewProduct.prefHeightProperty().bind(stage.heightProperty());
+		tableViewOrder.prefHeightProperty().bind(stage.heightProperty());
 	}
-	
+
 	public void updateTableView() {
 		if (service == null) {
-			throw new IllegalStateException("Service estava nulo");
+			throw new IllegalStateException("Service esta nulo");
 		}
-		
-		List<Product> list = service.findAll();
+		List<Order> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
-		tableViewProduct.setItems(obsList);
+		tableViewOrder.setItems(obsList);
 		initEditButtons();
 		initRemoveButtons();
 	}
-
-	private void createDialogForm(Product obj, String AbsoluteName, Stage parentStage) {
+	
+	private void createDialogForm(Order obj, String AbsoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(AbsoluteName));
 			Pane pane = loader.load();
 			
-			ProductFormController controller = loader.getController();
-			controller.setProduct(obj);
-			controller.setProductService1(new ProductService1());
+			OrderFormController controller = loader.getController();
+			controller.setOrder(obj);
+			controller.setServices(new OrderService(), new UserService());
+			controller.loadAssociatedOjects();
 			controller.subscribeDataChangeListener(this);
 			controller.updateFormDate();
 			
 			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Insira os dados do produto");
+			dialogStage.setTitle("Insira os dados do pedido");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
@@ -140,16 +135,15 @@ public class ProductListController implements Initializable, DataChangeListener 
 	@Override
 	public void onDataChanged() {
 		updateTableView();
-		
 	}
 	
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnEDIT.setCellFactory(param -> new TableCell<Product, Product>() {
+		tableColumnEDIT.setCellFactory(param -> new TableCell<Order, Order>() {
 			private final Button button = new Button("edit");
 
 			@Override
-			protected void updateItem(Product obj, boolean empty) {
+			protected void updateItem(Order obj, boolean empty) {
 				super.updateItem(obj, empty);
 				if (obj == null) {
 					setGraphic(null);
@@ -157,18 +151,18 @@ public class ProductListController implements Initializable, DataChangeListener 
 				}
 				setGraphic(button);
 				button.setOnAction(
-						event -> createDialogForm(obj, "/gui/ProductForm.fxml", Utils.currentStage(event)));
+						event -> createDialogForm(obj, "/gui/OrderForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
 	
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnREMOVE.setCellFactory(param -> new TableCell<Product, Product>() {
+		tableColumnREMOVE.setCellFactory(param -> new TableCell<Order, Order>() {
 			private final Button button = new Button("remove");
 
 			@Override
-			protected void updateItem(Product obj, boolean empty) {
+			protected void updateItem(Order obj, boolean empty) {
 				super.updateItem(obj, empty);
 				if (obj == null) {
 					setGraphic(null);
@@ -180,22 +174,21 @@ public class ProductListController implements Initializable, DataChangeListener 
 		});
 	}
 
-	private void removeEntity(Product obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
-
+	private void removeEntity(Order obj) {
+		Optional<ButtonType> result =  Alerts.showConfirmation("Confirmação", "Tem certeza que você quer Deletar");
+		
 		if (result.get() == ButtonType.OK) {
 			if (service == null) {
-				throw new IllegalStateException("Service was null");
+				throw new IllegalStateException("Serviço nulo");
 			}
 			try {
 				service.remove(obj);
 				updateTableView();
-			}
+			}	
 			catch (DbIntegrityException e) {
 				Alerts.showAlert("Error removing object", null, e.getMessage(), AlertType.ERROR);
 			}
 		}
-		
 	}
 }
 

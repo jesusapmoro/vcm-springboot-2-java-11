@@ -16,10 +16,12 @@
                   <items>
                     <MenuItem fx:id="menuItemProduto" mnemonicParsing="false" onAction="#onMenuItemProdutoAction" text="Produto" />
                         <MenuItem fx:id="menuItemUsuario" mnemonicParsing="false" onAction="#onMenuItemUsuarioAction" text="Usuario" />
+                        <MenuItem fx:id="menuItemOrder" mnemonicParsing="false" onAction="#onMenuItemOrderAction" text="Pedido" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                   <items>
+                        <MenuItem fx:id="menuItemConsulta" mnemonicParsing="false" text="Consulta" />
                     <MenuItem mnemonicParsing="false" text="Delete" />
                   </items>
                 </Menu>

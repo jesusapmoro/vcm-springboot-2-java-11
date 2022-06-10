@@ -27,14 +27,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.services.ProductService1;
 
-public class ProductListController implements Initializable, DataChangeListener {
+public class ProductListController2 implements Initializable, DataChangeListener {
 
 	private ProductService1 service;
 	
@@ -68,11 +67,7 @@ public class ProductListController implements Initializable, DataChangeListener 
 	@FXML
 	private Button btNew;
 	
-	@FXML
-	private TextField pesquisaProduct;
-	
 	private ObservableList<Product> obsList;
-	
 	
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
