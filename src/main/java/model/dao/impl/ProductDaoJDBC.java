@@ -166,4 +166,35 @@ public void deleteById(Long id) {
 	finally {
 		DB.closeStatement(st);
 	}
-}}
+}
+@Override
+public void retornaProduct(Product obj) {
+	PreparedStatement st = null;
+	try {
+		st = conn.prepareStatement(
+			"SELECT "
+			+ "Id, "
+			+ "Name,"
+			+ "Descripition "
+			+ "Price "
+			+ "cod_barra "
+			+ "img_url "
+			+ "FROM tb_product WHERE Id = Product.id");
+
+			st.setLong(1, obj.getId());
+			st.setString(2, obj.getName());
+			st.setString(3, obj.getDescription());
+			st.setDouble(4, obj.getPrice());
+			st.setString(5, obj.getCodBarra());
+			st.setString(6, obj.getImgUrl());
+
+	}
+	catch (SQLException e) {
+		throw new DbException(e.getMessage());
+	}
+	finally {
+		DB.closeStatement(st);
+		
+	}
+}
+}

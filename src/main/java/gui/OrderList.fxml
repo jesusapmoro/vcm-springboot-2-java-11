@@ -27,10 +27,8 @@
       <TableView fx:id="tableViewOrder" prefHeight="200.0" prefWidth="200.0">
         <columns>
           <TableColumn fx:id="tableColumnId" prefWidth="75.0" text="Id" />
-          <TableColumn fx:id="tableColumnDateOrder" prefWidth="75.0" text="Data Order" />
-            <TableColumn fx:id="tableColumnOrderStatus" prefWidth="75.0" text="OrderStatus" />
-            <TableColumn fx:id="tableColumnClient" prefWidth="75.0" text="Cliente Id" />
-            <TableColumn fx:id="tableColumnUserName" prefWidth="75.0" text="Name Client" />
+          <TableColumn fx:id="tableColumnOrderDate" prefWidth="75.0" text="Data Order" />
+            <TableColumn fx:id="tableColumnClient" prefWidth="175.0" text="Cliente Id" />
             <TableColumn fx:id="tableColumnEDIT" prefWidth="75.0" />
             <TableColumn fx:id="tableColumnREMOVE" prefWidth="75.0" />
         </columns>

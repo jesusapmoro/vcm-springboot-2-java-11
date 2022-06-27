@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.persistence.EmbeddedId;
+
 import com.jesusmoro.vcm.entities.Order;
 
 import application.Main;
@@ -32,53 +34,53 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.services.OrderItemService;
 import model.services.OrderService;
+import model.services.ProductService;
 import model.services.UserService;
 
 public class OrderListController implements Initializable, DataChangeListener {
 
+	@EmbeddedId
 	private OrderService service;
-	
+
 	@FXML
 	private TableView<Order> tableViewOrder;
-	
+
 	@FXML
 	private TableColumn<Order, Integer> tableColumnId;
-	
-	@FXML
-	private TableColumn<Order, Date> tableColumnDateOrder;
 
-	//@FXML
-	//private TableColumn<Order, Integer> tableColumnOrderStatus;
-	
+	@FXML
+	private TableColumn<Order, Date> tableColumnOrderDate;
+
 	@FXML
 	private TableColumn<Order, Long> tableColumnClient;
-	
-	//@FXML
-	//private TableColumn<Order, String> tableColumnUserName;
-	
+
+	@FXML
+	private TableColumn<Order, Integer> tableColumnStatus;
+
 	@FXML
 	private TableColumn<Order, Order> tableColumnEDIT;
-	
+
 	@FXML
 	private TableColumn<Order, Order> tableColumnREMOVE;
-	
+
 	@FXML
 	private Button btNew;
-	
+
 	private ObservableList<Order> obsList;
-	
+
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
 		Order obj = new Order();
 		createDialogForm(obj, "/gui/OrderForm.fxml", parentStage);
 	}
-	
+
 	public void setOrderService(OrderService service) {
 		this.service = service;
 	}
-	
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		InitializeableNode();
@@ -86,12 +88,10 @@ public class OrderListController implements Initializable, DataChangeListener {
 
 	private void InitializeableNode() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-		tableColumnDateOrder.setCellValueFactory(new PropertyValueFactory<>("dateOrder"));
-		Utils.formatTableColumnDate(tableColumnDateOrder, "dd/MM/yyyy");
-		//tableColumnOrderStatus.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+		tableColumnOrderDate.setCellValueFactory(new PropertyValueFactory<>("orderDate"));
+		Utils.formatTableColumnDate(tableColumnOrderDate, "dd/MM/yyyy");
 		tableColumnClient.setCellValueFactory(new PropertyValueFactory<>("client"));
-		//tableColumnUserName.setCellValueFactory(new PropertyValueFactory<>("userName"));
-		
+
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewOrder.prefHeightProperty().bind(stage.heightProperty());
 	}
@@ -106,19 +106,20 @@ public class OrderListController implements Initializable, DataChangeListener {
 		initEditButtons();
 		initRemoveButtons();
 	}
-	
+
 	private void createDialogForm(Order obj, String AbsoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(AbsoluteName));
 			Pane pane = loader.load();
-			
+
 			OrderFormController controller = loader.getController();
 			controller.setOrder(obj);
-			controller.setServices(new OrderService(), new UserService());
+			controller.setServices(new OrderService(), new UserService(), new OrderItemService(), new ProductService());
 			controller.loadAssociatedOjects();
 			controller.subscribeDataChangeListener(this);
 			controller.updateFormDate();
-			
+			controller.updateTableView();
+
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Insira os dados do pedido");
 			dialogStage.setScene(new Scene(pane));
@@ -136,7 +137,7 @@ public class OrderListController implements Initializable, DataChangeListener {
 	public void onDataChanged() {
 		updateTableView();
 	}
-	
+
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnEDIT.setCellFactory(param -> new TableCell<Order, Order>() {
@@ -149,13 +150,13 @@ public class OrderListController implements Initializable, DataChangeListener {
 					setGraphic(null);
 					return;
 				}
+
 				setGraphic(button);
-				button.setOnAction(
-						event -> createDialogForm(obj, "/gui/OrderForm.fxml", Utils.currentStage(event)));
+				button.setOnAction(event -> createDialogForm(obj, "/gui/OrderForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
-	
+
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnREMOVE.setCellFactory(param -> new TableCell<Order, Order>() {
@@ -172,11 +173,12 @@ public class OrderListController implements Initializable, DataChangeListener {
 				button.setOnAction(event -> removeEntity(obj));
 			}
 		});
+
 	}
 
 	private void removeEntity(Order obj) {
-		Optional<ButtonType> result =  Alerts.showConfirmation("Confirmação", "Tem certeza que você quer Deletar");
-		
+		Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem certeza que você quer Deletar");
+
 		if (result.get() == ButtonType.OK) {
 			if (service == null) {
 				throw new IllegalStateException("Serviço nulo");
@@ -184,11 +186,9 @@ public class OrderListController implements Initializable, DataChangeListener {
 			try {
 				service.remove(obj);
 				updateTableView();
-			}	
-			catch (DbIntegrityException e) {
+			} catch (DbIntegrityException e) {
 				Alerts.showAlert("Error removing object", null, e.getMessage(), AlertType.ERROR);
 			}
 		}
 	}
 }
-

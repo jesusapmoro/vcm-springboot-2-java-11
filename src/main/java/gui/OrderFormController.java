@@ -1,18 +1,23 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.jesusmoro.vcm.entities.Order;
+import com.jesusmoro.vcm.entities.OrderItem;
+import com.jesusmoro.vcm.entities.Product;
 import com.jesusmoro.vcm.entities.User;
 import com.jesusmoro.vcm.exceptions.ValidationException;
 
+import application.Main;
 import db.DbException;
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
@@ -27,12 +32,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import javafx.util.Callback;
+import model.services.OrderItemService;
 import model.services.OrderService;
+import model.services.ProductService;
 import model.services.UserService;
 
 public class OrderFormController implements Initializable {
@@ -42,26 +52,63 @@ public class OrderFormController implements Initializable {
 	private OrderService service;
 
 	private UserService userService;
+	
+	private ProductService productService;
+
+	private OrderItemService orderItemService;
 
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 	@FXML
 	private TextField txtId;
+	
+	@FXML
+    private TextField txtIdClient;
+
+    @FXML
+    private TextField txtIdProduct;
 
 	@FXML
-	private DatePicker dpDateOrder;
+	private DatePicker dpOrderDate;
+	
+	@FXML
+	private TextField txtTotal;
+	
+	@FXML
+	private TextField txtPrice;
 
 	@FXML
-	private TextField txtClient;
+	private TextField txtQuantity;
 
 	@FXML
 	private ComboBox<User> comboBoxUser;
+	
+	@FXML
+	private ComboBox<Product> comboBoxProduct;
 
 	@FXML
 	private Label labelErrorName;
 
-	// @FXML
-	// private TextField txtImgUrl;
+	@FXML
+	private Label labelErrorOrderDate;
+
+	@FXML
+	private TableColumn<OrderItem, Long> tableColumnOrderItemOrderId;
+
+	@FXML
+	private TableColumn<OrderItem, Double> tableColumnOrderItemPrice;
+
+	@FXML
+	private TableColumn<OrderItem, Long> tableColumnOrderItemProductId;
+
+	@FXML
+	private TableColumn<OrderItem, Integer> tableColumnOrderItemQuantity;
+	
+	@FXML
+	private TableColumn<OrderItem, Double> tableColumnOrderItemSubTotal;
+
+	@FXML
+	private TableView<OrderItem> tableViewOrderItem;
 
 	@FXML
 	private Button btSave;
@@ -69,18 +116,22 @@ public class OrderFormController implements Initializable {
 	@FXML
 	private Button btCancel;
 
-	@FXML
-	private Labeled txtOrderStatus;
-
 	private ObservableList<User> obsList;
-
+	
+	private ObservableList<Product> obsListProd;
+	
 	public void setOrder(Order entity) {
 		this.entity = entity;
 	}
+	
+	public void setOrderItem(OrderItem orderItem) {
+	}
 
-	public void setServices(OrderService service, UserService userService) {
+	public void setServices(OrderService service, UserService userService, OrderItemService orderItemService, ProductService productService) {
 		this.service = service;
 		this.userService = userService;
+		this.orderItemService = orderItemService;
+		this.productService = productService;
 	}
 
 	public void subscribeDataChangeListener(DataChangeListener listener) {
@@ -119,25 +170,23 @@ public class OrderFormController implements Initializable {
 		ValidationException exception = new ValidationException("Validation error");
 
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
-
-		//if (txtClient.getText() == null || txtClient.getText().trim().equals("")) {
-			//exception.addError("client", "O campo não pode ser vazio");
-		// obj.setClient(txtClient.getText());
-
-		if (dpDateOrder.getValue() == null) {
-			exception.addError("DateOrder", "Fiel can't be empty");
+		obj.getTotal();
+		if (dpOrderDate.getValue() == null) {
+			exception.addError("dateOrder", "Fiel can't be empty");
+		} else {
+			Instant instant = Instant.from(dpOrderDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+			obj.setOrderDate(Date.from(instant));
 		}
 
-		// obj.setOrderStatus(Utils.tryParseToInt(txtOrderStatus.getText()));
-
-		// obj.setImgUrl(txtImgUrl.getText());
-
+		obj.setClient(comboBoxUser.getValue());
+		
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
-
+		
 		return obj;
 	}
+		
 
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
@@ -151,10 +200,12 @@ public class OrderFormController implements Initializable {
 
 	private void initializeNodes() {
 		gui.util.Constraints.setTextFieldInteger(txtId);
-		//gui.util.Constraints.setTextFieldMaxLength(txtClient, 40);
-		Utils.formatDatePicker(dpDateOrder, "dd/MM/yyyy");
-		
+		Utils.formatDatePicker(dpOrderDate, "dd/MM/yyyy");
+		gui.util.Constraints.setTextFieldDouble(txtTotal);
+
 		initializeComboBoxUser();
+		initializeComboBoxProduct();
+		initializabletableViewOrderItem();
 	}
 
 	public void updateFormDate() {
@@ -162,36 +213,53 @@ public class OrderFormController implements Initializable {
 			throw new IllegalStateException("Entity was null");
 		}
 		txtId.setText(String.valueOf(entity.getId()));
-		if (entity.getDateOrder() != null) {
-			dpDateOrder.setValue(LocalDate.ofInstant(entity.getDateOrder().toInstant(), ZoneId.systemDefault()));
+		txtTotal.setText(String.valueOf(entity.getTotal()));
+
+		if (entity.getOrderDate() != null) {
+			dpOrderDate.setValue(LocalDate.ofInstant(entity.getOrderDate().toInstant(), ZoneId.systemDefault()));
 		}
-		// txtClient.setText(entity.getClient());
-		// txtImgUrl.setText(entity.getImgUrl());
+
 		if (entity.getClient() == null) {
 			comboBoxUser.getSelectionModel().selectFirst();
+		} else {
+			comboBoxUser.setValue(entity.getClient());
 		}
-		else {
-		comboBoxUser.setValue(entity.getClient());
+
+		if (entity.getItems() == null) {
+			tableColumnOrderItemOrderId.setText(String.valueOf(false));
 		}
-	}	
-	
+
+	}
+
 	public void loadAssociatedOjects() {
 		if (userService == null) {
-			throw new IllegalStateException("UserService esta nulo");
+			throw new IllegalStateException("Cliente esta nulo");
 		}
 		List<User> list = userService.FindAll();
 		obsList = FXCollections.observableArrayList(list);
 		comboBoxUser.setItems(obsList);
+		
+		if (productService == null) {
+			throw new IllegalStateException("Produto esta nulo");
+		}
+		List<Product> listProd = productService.findAll();
+		obsListProd = FXCollections.observableArrayList(listProd);
+		comboBoxProduct.setItems(obsListProd);
+
+		if (orderItemService == null) {
+			throw new IllegalStateException("Service esta nulo");
+		}
+		List<OrderItem> listOrderItem = orderItemService.findAll();
+		obsListOrderItem = FXCollections.observableArrayList(listOrderItem);
+		tableViewOrderItem.setItems(obsListOrderItem);
 	}
 
 	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
 
-		if (fields.contains("client")) {
-			labelErrorName.setText(errors.get("client"));
-		}
+		labelErrorOrderDate.setText((fields.contains("orderDate") ? errors.get("orderDate") : ""));
 	}
-
+	
 	private void initializeComboBoxUser() {
 		Callback<ListView<User>, ListCell<User>> factory = lv -> new ListCell<User>() {
 			@Override
@@ -203,4 +271,58 @@ public class OrderFormController implements Initializable {
 		comboBoxUser.setCellFactory(factory);
 		comboBoxUser.setButtonCell(factory.call(null));
 	}
+	
+	private void initializeComboBoxProduct() {
+		Callback<ListView<Product>, ListCell<Product>> factory = lv -> new ListCell<Product>() {
+			@Override
+			protected void updateItem(Product item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(empty ? "" : item.getName());
+			}
+		};
+		comboBoxProduct.setCellFactory(factory);
+		comboBoxProduct.setButtonCell(factory.call(null));
+	}
+	
+	private ObservableList<OrderItem> obsListOrderItem;
+	
+	public void setOrderItemService(OrderItemService orderItemService) {
+		this.orderItemService = orderItemService;
+	}
+
+	private void initializabletableViewOrderItem() {
+		tableColumnOrderItemOrderId.setCellValueFactory(new PropertyValueFactory<>("order"));
+		tableColumnOrderItemProductId.setCellValueFactory(new PropertyValueFactory<>("product"));
+		tableColumnOrderItemPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+		tableColumnOrderItemQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+		tableColumnOrderItemSubTotal.setCellValueFactory(new PropertyValueFactory<>("SubTotal"));
+
+		 Stage stage = (Stage) Main.getMainScene().getWindow();
+		 tableViewOrderItem.prefHeightProperty().bind(stage.heightProperty());
+	}
+	
+	public void updateTableView() {
+		if (orderItemService == null) {
+			throw new IllegalStateException("Service esta nulo");
+		}
+		List<OrderItem> list = orderItemService.findByOrder(entity);
+		obsListOrderItem = FXCollections.observableArrayList(list);
+		tableViewOrderItem.setItems(obsListOrderItem);
+	}
+
+	@FXML
+	void onComboBoxProductAction(ActionEvent event) {
+		
+		Double d = comboBoxProduct.getSelectionModel().getSelectedItem().getPrice();
+		txtPrice.setText(String.valueOf(d));
+		Long log = comboBoxProduct.getSelectionModel().getSelectedItem().getId();
+		txtIdProduct.setText(String.valueOf(log));
+		txtQuantity.setText("1");
+	}
+	
+	 @FXML
+	    void onComboBoxUserAction(ActionEvent event) {
+		 Long log = comboBoxUser.getSelectionModel().getSelectedItem().getId();
+		 txtIdClient.setText(String.valueOf(log));
+	    }
 }

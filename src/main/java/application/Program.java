@@ -3,6 +3,7 @@ package application;
 import java.util.List;
 
 import com.jesusmoro.vcm.entities.Order;
+import com.jesusmoro.vcm.entities.OrderItem;
 import com.jesusmoro.vcm.entities.User;
 
 import model.dao.DaoFactory;
@@ -30,6 +31,13 @@ public class Program {
 		for (Order obj1 : list) {
 		System.out.println(obj1);	
 		}
+		
+		System.out.println("\n=== TEST 2: order findByIdOrderItem ====");
+		OrderItem orderItem = new OrderItem(order, null, null, null);
+		List<Order> list1 = orderDao.findByOrderItem(orderItem);
+		for (Order obj : list1) {
+			System.out.println(obj);
+	}
 	}
 }
 

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="404.0" prefWidth="584.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PdvFormController">
+   <children>
+      <Pane fx:id="pane" prefHeight="403.0" prefWidth="584.0">
+         <children>
+            <ComboBox fx:id="comboBoxUser" layoutX="40.0" layoutY="57.0" prefHeight="26.0" prefWidth="403.0" />
+            <TextField fx:id="txtId" layoutX="84.0" layoutY="17.0" />
+            <Label layoutX="36.0" layoutY="21.0" text="Id" />
+            <Label layoutX="254.0" layoutY="21.0" prefHeight="18.0" prefWidth="38.0" text="Data" />
+            <DatePicker fx:id="dpOrderDate" layoutX="339.0" layoutY="17.0" />
+            <Button fx:id="btSave" layoutX="348.0" layoutY="364.0" mnemonicParsing="false" onAction="#onBtSaveAction" text="Save" />
+            <Button fx:id="btCancel" layoutX="430.0" layoutY="364.0" mnemonicParsing="false" onAction="#onBtCancelAction" text="Cancel" />
+            <Label layoutX="41.0" layoutY="98.0" text="Id Produto" />
+            <TextField fx:id="txtIdProduct" layoutX="40.0" layoutY="115.0" />
+            <ComboBox fx:id="comboBoxProduct" layoutX="198.0" layoutY="115.0" prefWidth="150.0" />
+            <Label layoutX="429.0" layoutY="98.0" text="Quantidade" />
+            <TextField fx:id="txtQuantity" layoutX="427.0" layoutY="115.0" prefHeight="25.0" prefWidth="127.0" />
+            <TableView layoutX="40.0" layoutY="152.0" prefHeight="200.0" prefWidth="510.0">
+              <columns>
+                <TableColumn fx:id="tableColumnOrderItemOrderId" prefWidth="75.0" text="Order" />
+                <TableColumn fx:id="tableColumnOrderItemProductId" prefWidth="218.39996337890625" text="Produto" />
+                  <TableColumn fx:id="tableColumnOrderItemPrice" prefWidth="79.20001220703125" text="Preço" />
+                  <TableColumn fx:id="tableColumnOrderItemQuantity" prefWidth="83.20001220703125" text="Quant" />
+              </columns>
+            </TableView>
+         </children>
+      </Pane>
+   </children>
+</VBox>

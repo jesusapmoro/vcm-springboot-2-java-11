@@ -7,7 +7,7 @@ import com.jesusmoro.vcm.entities.Product;
 import model.dao.DaoFactory;
 import model.dao.ProductDao;
 
-public class ProductService1 {
+public class ProductService {
 	
 	private ProductDao dao = DaoFactory.createProductDao();
 	
@@ -26,5 +26,9 @@ public class ProductService1 {
 	
 	public void remove(Product obj) {
 		dao.deleteById(obj.getId());
+	}
+
+	public void retornaProduct(Product obj) {
+		dao.retornaProduct(obj);
 	}
 }

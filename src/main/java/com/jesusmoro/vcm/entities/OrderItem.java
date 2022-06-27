@@ -92,6 +92,11 @@ public class OrderItem implements Serializable {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "OrderItem [id=" + id + ", quantity=" + quantity + ", price=" + price + "]";
+	}
 	
 	
 }

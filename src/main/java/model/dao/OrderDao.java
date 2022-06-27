@@ -3,8 +3,8 @@ package model.dao;
 import java.util.List;
 
 import com.jesusmoro.vcm.entities.Order;
+import com.jesusmoro.vcm.entities.OrderItem;
 import com.jesusmoro.vcm.entities.User;
-import com.jesusmoro.vcm.entities.enums.OrderStatus;
 
 public interface OrderDao {
 
@@ -14,5 +14,5 @@ public interface OrderDao {
 	Order findById(Long id);
 	List<Order> findAll();
 	List<Order> findByUser(User user);
-	List<Order> findByOrderStatus(OrderStatus orderStatus);
+	List<Order> findByOrderItem(OrderItem orderItem);
 }

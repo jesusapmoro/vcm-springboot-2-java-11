@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.jesusmoro.vcm.entities.Order;
+import com.jesusmoro.vcm.entities.OrderItem;
 import com.jesusmoro.vcm.entities.User;
-import com.jesusmoro.vcm.entities.enums.OrderStatus;
 import com.mysql.jdbc.Statement;
 
 import db.DB;
@@ -31,22 +31,21 @@ public class OrderDaoJDBC implements OrderDao {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(
-					"INSERT INTO order "
-					+ "(date_order, order_status, client_id) "
-					+ "VALUES "
-					+ "(?, ?, ?,)",
+					"INSERT INTO tb_order " +
+					"(order_date, client_id) " +
+					"VALUES " +
+					"(?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			
-			st.setDate(1, new java.sql.Date(obj.getDateOrder().getTime()));
-			st.setInt(2, obj.getOrderStatus().getCode());
-			st.setLong(3, obj.getClient().getId());
+			st.setDate(1, new java.sql.Date(obj.getOrderDate().getTime()));
+			st.setLong(2, obj.getClient().getId());
 			
 			int rowsAffected = st.executeUpdate();
 			
 			if (rowsAffected > 0) {
 				ResultSet rs = st.getGeneratedKeys();
 				if (rs.next()) {
-					long id = rs.getInt(1);
+					long id = rs.getLong(1);
 					obj.setId(id);
 				}
 				DB.closeResultSet(rs);
@@ -68,14 +67,13 @@ public class OrderDaoJDBC implements OrderDao {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(
-					"UPDATE order "
-					+ "SET date_order = , order_status = ?, client_id = ?) "
-					+ "WHERE id = ? ");
+					"UPDATE tb_order " +
+					"SET order_date = ? , client_id = ? " +
+					"WHERE id = ?");
 			
-			st.setDate(1, new java.sql.Date(obj.getDateOrder().getTime()));
-			st.setInt(2, obj.getOrderStatus().getCode());
-			st.setLong(3, obj.getClient().getId());
-			st.setLong(4, obj.getId());
+			st.setDate(1, new java.sql.Date(obj.getOrderDate().getTime()));
+			st.setLong(2, obj.getClient().getId());
+			st.setLong(3, obj.getId());
 			
 			st.executeUpdate();
 		}
@@ -112,6 +110,7 @@ public class OrderDaoJDBC implements OrderDao {
 		try {
 			st = conn.prepareStatement(
 					"SELECT tb_order.*,tb_user.Name as UserName "
+					+ ",tb_user.Email as UserEmail "
 					+ "FROM tb_order INNER JOIN tb_user "
 					+ "ON tb_order.client_id = tb_user.id "
 					+ "WHERE tb_order.id = ?");
@@ -120,7 +119,8 @@ public class OrderDaoJDBC implements OrderDao {
 			rs = st.executeQuery();	
 			if (rs.next()) {
 				User use = instantiateUser(rs);
-				Order obj = instantiateOrder(rs, use);
+				OrderItem orderIte = instantiateOrderItem(rs);
+				Order obj = instantiateOrder(rs, use, orderIte);
 				return obj;
 			}
 			return null;
@@ -134,19 +134,29 @@ public class OrderDaoJDBC implements OrderDao {
 		}
 	}
 
-	private Order instantiateOrder(ResultSet rs, User user) throws SQLException {
+	private Order instantiateOrder(ResultSet rs, User user, OrderItem orderItem) throws SQLException {
 		Order obj = new Order();
 		obj.setId(rs.getLong("id"));
-		obj.setDateOrder(new java.util.Date(rs.getTimestamp("date_order").getTime()));
+		obj.setOrderDate(new java.util.Date(rs.getTimestamp("order_date").getTime()));
 		obj.setClient(user);
+		obj.getItems();
+		obj.getTotal();
 		return obj;
 	}
 
 	private User instantiateUser(ResultSet rs) throws SQLException {
 		User user = new User();
 		user.setId(rs.getLong("client_id"));
-		user.setName(rs.getString("username"));
+		user.setName(rs.getString("userName"));
+		user.setEmail(rs.getString("userEmail"));
 		return user;
+	}
+	
+	private OrderItem instantiateOrderItem(ResultSet rs) throws SQLException {
+		OrderItem orderItem = new OrderItem();
+		orderItem.getOrder();
+		orderItem.hashCode();
+		return orderItem;
 	}
 
 	@Override
@@ -156,6 +166,7 @@ public class OrderDaoJDBC implements OrderDao {
 		try {
 			st = conn.prepareStatement(
 					"SELECT tb_order.*,tb_user.Name as UserName "
+					+ ",tb_user.Email as UserEmail "
 					+ "FROM tb_order INNER JOIN tb_user "
 					+ "ON tb_order.client_id = tb_user.id "
 					+ "ORDER BY Name");
@@ -173,8 +184,8 @@ public class OrderDaoJDBC implements OrderDao {
 					use = instantiateUser(rs);
 					map.put(rs.getLong("client_id"), use);
 				}
-				
-				Order obj = instantiateOrder(rs, use);
+				OrderItem orderIte = instantiateOrderItem(rs);
+				Order obj = instantiateOrder(rs, use, orderIte);
 				list.add(obj);
 			}
 			return list;
@@ -195,6 +206,7 @@ public class OrderDaoJDBC implements OrderDao {
 		try {
 			st = conn.prepareStatement(
 					"SELECT tb_order.*,tb_user.Name as UserName "
+					+ ",tb_user.Email as UserEmail "
 					+ "FROM tb_order INNER JOIN tb_user "
 					+ "ON tb_order.client_id = tb_user.id "
 					+ "WHERE client_id = ? "
@@ -214,8 +226,8 @@ public class OrderDaoJDBC implements OrderDao {
 					use = instantiateUser(rs);
 					map.put(rs.getLong("client_id"), use);
 				}
-				
-				Order obj = instantiateOrder(rs, use);
+				OrderItem orderIte = instantiateOrderItem(rs);
+				Order obj = instantiateOrder(rs, use, orderIte);
 				list.add(obj);
 			}
 			return list;
@@ -230,12 +242,46 @@ public class OrderDaoJDBC implements OrderDao {
 	}
 
 	@Override
-	public List<Order> findByOrderStatus(OrderStatus orderStatus) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Order> findByOrderItem(OrderItem orderItem) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"SELECT tb_order.*,tb_order_item.order_id as OrderId "
+					+ ",tb_order_item.quantity as OrderQuantity "
+					+ "FROM tb_order INNER JOIN tb_order_item "
+					+ "ON tb_order.id = tb_order_item.order_id "
+					+ "WHERE id = ? "
+					+ "ORDER BY order_id");
+			
+			//st.setLong(1, orderItem.getOrder());
+			rs = st.executeQuery();	
+			
+			List<Order> list = new ArrayList<>();
+			Map<Long, OrderItem> map = new HashMap<>();
+			
+			while (rs.next()) {
+				
+				OrderItem orderIte = map.get(rs.getLong("order"));
+				
+				if (orderIte == null) {
+					orderIte = instantiateOrderItem(rs);
+					map.put(rs.getLong("order"), orderIte);
+				}
+				User use = instantiateUser(rs);
+				Order obj = instantiateOrder(rs, use, orderIte);
+				list.add(obj);
+			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
-
-	}	
-
+}
 
 	

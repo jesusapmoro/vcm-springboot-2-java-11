@@ -17,7 +17,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jesusmoro.vcm.entities.enums.OrderStatus;
 
 @Entity
 @Table(name = "tb_order")
@@ -29,9 +28,8 @@ public class Order implements Serializable {
 	private Long id;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
-	private Date dateOrder;
+	private Date orderDate;
 	
-	private Integer orderStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "client_id")
@@ -46,11 +44,10 @@ public class Order implements Serializable {
 	public Order() {
 	}
 
-	public Order(Long id, Date dateOrder, OrderStatus orderStatus, User client) {
+	public Order(Long id, Date orderDate, User client) {
 		super();
 		this.id = id;
-		this.dateOrder = dateOrder;
-		setOrderStatus(orderStatus);
+		this.orderDate = orderDate;
 		this.client = client;
 	}
 
@@ -62,22 +59,12 @@ public class Order implements Serializable {
 		this.id = id;
 	}
 
-	public Date getDateOrder() {
-		return dateOrder;
+	public Date getOrderDate() {
+		return orderDate;
 	}
 
-	public void setDateOrder(Date dateOrder) {
-		this.dateOrder = dateOrder;
-	}
-	
-	public OrderStatus getOrderStatus() {
-		return OrderStatus.valueOf(orderStatus);
-	}
-
-	public void setOrderStatus(OrderStatus orderStatus) {
-		if (orderStatus != null) {
-			this.orderStatus = orderStatus.getCode();
-		}
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
 	}
 
 	public User getClient() {
@@ -135,7 +122,7 @@ public class Order implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", dateOrder=" + dateOrder + ", orderStatus=" + orderStatus + ", client=" + client
+		return "Order [id=" + id + ", orderDate=" + orderDate + ", client=" + client
 				+ ", items=" + items + ", payment=" + payment + "]";
 	}
 }

@@ -22,13 +22,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import model.services.ProductService1;
+import model.services.ProductService;
 
 public class ProductFormController implements Initializable {
 
 	private Product entity;
 	
-	private ProductService1 service;
+	private ProductService service;
 	
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 	
@@ -63,7 +63,7 @@ public class ProductFormController implements Initializable {
 		this.entity = entity;
 	}
 	
-	public void setProductService1(ProductService1 service) {
+	public void setProductService(ProductService service) {
 		this.service = service;
 	}
 	

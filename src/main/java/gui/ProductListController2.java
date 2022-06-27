@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.jesusmoro.vcm.entities.Product;
+import com.jesusmoro.vcm.services.ProductService;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -31,11 +32,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.services.ProductService1;
 
 public class ProductListController2 implements Initializable, DataChangeListener {
 
-	private ProductService1 service;
+	private ProductService service;
 	
 	@FXML
 	private TableView<Product> tableViewProduct;
@@ -76,7 +76,7 @@ public class ProductListController2 implements Initializable, DataChangeListener
 		createDialogForm(obj, "/gui/ProductForm.fxml", parentStage);
 	}
 	
-	public void setProductService1(ProductService1 productService) {
+	public void setProductService(ProductService productService) {
 		this.service = productService;
 	}
 	
@@ -115,7 +115,7 @@ public class ProductListController2 implements Initializable, DataChangeListener
 			
 			ProductFormController controller = loader.getController();
 			controller.setProduct(obj);
-			controller.setProductService1(new ProductService1());
+			//controller.setProductService(new ProductService());
 			controller.subscribeDataChangeListener(this);
 			controller.updateFormDate();
 			

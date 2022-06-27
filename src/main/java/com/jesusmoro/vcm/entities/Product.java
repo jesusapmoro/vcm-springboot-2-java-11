@@ -115,6 +115,7 @@ public class Product implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((codBarra == null) ? 0 : codBarra.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -128,6 +129,11 @@ public class Product implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Product other = (Product) obj;
+		if (codBarra == null) {
+			if (other.codBarra != null)
+				return false;
+		} else if (!codBarra.equals(other.codBarra))
+			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -138,7 +144,7 @@ public class Product implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Product [id="+ id +", name=" + name +"]";
+		return "Product [id=" + id + ", name=" + name + ", price=" + price + "]";
 	}
 
 }

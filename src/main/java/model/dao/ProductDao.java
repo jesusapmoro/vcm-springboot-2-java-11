@@ -11,4 +11,5 @@ public interface ProductDao {
 	void deleteById(Long id);
 	Product findById(Long id);
 	List<Product> findAll();
+	void retornaProduct(Product obj);
 }

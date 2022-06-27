@@ -32,11 +32,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.services.ProductService1;
+import model.services.ProductService;
 
 public class ProductListController implements Initializable, DataChangeListener {
 
-	private ProductService1 service;
+	private ProductService service;
 	
 	@FXML
 	private TableView<Product> tableViewProduct;
@@ -81,7 +81,7 @@ public class ProductListController implements Initializable, DataChangeListener 
 		createDialogForm(obj, "/gui/ProductForm.fxml", parentStage);
 	}
 	
-	public void setProductService1(ProductService1 productService) {
+	public void setProductService1(ProductService productService) {
 		this.service = productService;
 	}
 	
@@ -120,7 +120,7 @@ public class ProductListController implements Initializable, DataChangeListener 
 			
 			ProductFormController controller = loader.getController();
 			controller.setProduct(obj);
-			controller.setProductService1(new ProductService1());
+			controller.setProductService(new ProductService());
 			controller.subscribeDataChangeListener(this);
 			controller.updateFormDate();
 			

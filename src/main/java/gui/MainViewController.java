@@ -5,8 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-
-
 import application.Main;
 import gui.util.Alerts;
 import javafx.fxml.FXML;
@@ -19,7 +17,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import model.services.OrderService;
-import model.services.ProductService1;
+import model.services.ProductService;
 import model.services.UserService;
 
 public class MainViewController implements Initializable {
@@ -37,12 +35,12 @@ public class MainViewController implements Initializable {
 	private MenuItem menuItemAbout;
 	
 	@FXML
-	private MenuItem menuItemConsulta;
+	private MenuItem menuItemPdv;
 	
 	@FXML
 	public void onMenuItemProdutoAction() {
 		loadView("/gui/ProductList.fxml", (ProductListController controller) -> {
-			controller.setProductService1(new ProductService1());
+			controller.setProductService1(new ProductService());
 			controller.updateTableView();
 		});
 	}
@@ -64,6 +62,14 @@ public class MainViewController implements Initializable {
 		});
 	}
 	
+	@FXML
+	public void onMenuItemPdvAction() {
+		loadView("/gui/PdvList.fxml", (PdvFormController controller) -> {
+			controller.setServices(new OrderService(), new UserService());
+			controller.loadAssociatedOjects();
+		});
+		}
+
 	
 	@FXML
 	public void onMenuItemAboutAction() {
@@ -92,7 +98,7 @@ public class MainViewController implements Initializable {
 			initializingAction.accept(controller);
 		}
 		catch (IOException e) {
-			Alerts.showAlert("IO Exceptio", "Errro ao carregar a pagina", e.getMessage(), AlertType.ERROR);
+			Alerts.showAlert("IO Exception", "Erro ao carregar a pagina", e.getMessage(), AlertType.ERROR);
 		}
 	}
 }

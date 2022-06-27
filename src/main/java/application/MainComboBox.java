@@ -4,35 +4,27 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainComboBox extends Application {
-	
-	private static Scene mainScene;
-	
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/ComboBox.fxml"));
-			AnchorPane anchorPane = loader.load();
-			
-						
-			mainScene = new Scene(anchorPane);
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/PdvForm.fxml"));
+			Parent parent = loader.load();
+			Scene mainScene = new Scene(parent);
 			primaryStage.setScene(mainScene);
-			primaryStage.setTitle("ComboBox");
+			primaryStage.setTitle("Sample JavaFX application");
 			primaryStage.show();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static Scene getMainScene() {
-		return mainScene;
-	}
 
-	public static void main(String[] args) {
+	public static void mainComboBox(String[] args) {
 		launch(args);
 	}
 }
